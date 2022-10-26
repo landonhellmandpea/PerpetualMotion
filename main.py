@@ -102,6 +102,7 @@ ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_cu
 MAIN_SCREEN_NAME = 'main'
 
 print('d')
+ramp.go_until_press(1, 12800)
 
 class MainScreen(Screen):
     print('1')
@@ -132,15 +133,24 @@ class MainScreen(Screen):
         
     def toggleRamp(self):
         print("Move ramp up and down here")
-        
+        if not (cyprus.read_gpio() & 0b0010):
+            while (cyprus.read_gpio() & 0b0001):
+                ramp.relative_move(-1)
+            if not (cyprus.read_gpio() & 0b0001):
+                ramp.go_until_press(1, 25600)
+
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
         
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
+        self.rampSpeed = str(speed)
+        self.ids.rampSpeedLabel.text = str('Ramp Speed: ' + self.rampSpeed)
         
     def setStaircaseSpeed(self, speed):
         print("Set the staircase speed and update slider text")
+        self.staircaseSpeed = str(speed)
+        self.ids.staircaseSpeedLabel.text = str('Staircase Speed: ' + self.staircaseSpeed)
         
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
