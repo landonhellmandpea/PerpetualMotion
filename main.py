@@ -2,10 +2,17 @@
 # //                     IMPORT STATEMENTS                      //
 # ////////////////////////////////////////////////////////////////
 
+import os
+import pygame
+import spidev
 import math
 import sys
 import time
 import threading
+
+pygame.init()
+
+os.environ['DISPLAY'] = ':0'
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -32,6 +39,8 @@ import RPi.GPIO as GPIO
 from pidev.stepper import stepper
 from pidev.Cyprus_Commands import Cyprus_Commands_RPi as cyprus
 
+print('a')
+
 
 # ////////////////////////////////////////////////////////////////
 # //                      GLOBAL VARIABLES                      //
@@ -54,6 +63,7 @@ RAMP_LENGTH = 725
 # //            DECLARE APP CLASS AND SCREENMANAGER             //
 # //                     LOAD KIVY FILE                         //
 # ////////////////////////////////////////////////////////////////
+print('b')
 class MyApp(App):
     def build(self):
         self.title = "Perpetual Motion"
@@ -67,6 +77,7 @@ cyprus.open_spi()
 # ////////////////////////////////////////////////////////////////
 # //                    SLUSH/HARDWARE SETUP                    //
 # ////////////////////////////////////////////////////////////////
+print('c')
 sm = ScreenManager()
 ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_current=20, deaccel_current=20,
              steps_per_unit=200, speed=INIT_RAMP_SPEED)
@@ -85,10 +96,18 @@ ramp = stepper(port=0, micro_steps=32, hold_current=20, run_current=20, accel_cu
 # //   SHOULD REFERENCE MAIN FUNCTIONS WITHIN THESE FUNCTIONS   //
 # //      SHOULD NOT INTERACT DIRECTLY WITH THE HARDWARE        //
 # ////////////////////////////////////////////////////////////////
+MAIN_SCREEN_NAME = 'main'
+
+print('d')
+
 class MainScreen(Screen):
-    version = cyprus.read_firmware_version()
+    print('1')
+    #version = cyprus.read_firmware_version()
+    print('2')
     staircaseSpeedText = '0'
+    print('3')
     rampSpeed = INIT_RAMP_SPEED
+    print('4')
     staircaseSpeed = 40
 
     def __init__(self, **kwargs):
@@ -126,7 +145,8 @@ class MainScreen(Screen):
         print("Exit")
         MyApp().stop()
 
-sm.add_widget(MainScreen(name = 'main'))
+print('e')
+sm.add_widget(MainScreen(name=MAIN_SCREEN_NAME))
 
 # ////////////////////////////////////////////////////////////////
 # //                          RUN APP                           //
@@ -134,3 +154,4 @@ sm.add_widget(MainScreen(name = 'main'))
 
 MyApp().run()
 cyprus.close_spi()
+print('7')
