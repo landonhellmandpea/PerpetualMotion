@@ -73,6 +73,9 @@ Builder.load_file('main.kv')
 Window.clearcolor = (.1, .1,.1, 1) # (WHITE)
 
 cyprus.open_spi()
+cyprus.initialize()
+cyprus.setup_servo(2)
+
 
 # ////////////////////////////////////////////////////////////////
 # //                    SLUSH/HARDWARE SETUP                    //
@@ -116,6 +119,13 @@ class MainScreen(Screen):
 
     def toggleGate(self):
         print("Open and Close gate here")
+        if self.ids.gate.mDir == 0:
+            cyprus.set_servo_position(2, 0)
+            self.ids.gate.mDir = 0.5
+        elif self.ids.gate.mDir == 0.5:
+            cyprus.set_servo_position(2, 0.5)
+            self.ids.gate.mDir = 0
+
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
@@ -144,6 +154,7 @@ class MainScreen(Screen):
     def quit(self):
         print("Exit")
         MyApp().stop()
+        quit()
 
 print('e')
 sm.add_widget(MainScreen(name=MAIN_SCREEN_NAME))
