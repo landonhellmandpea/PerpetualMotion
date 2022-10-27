@@ -77,6 +77,7 @@ cyprus.initialize()
 cyprus.setup_servo(2)
 
 
+
 # ////////////////////////////////////////////////////////////////
 # //                    SLUSH/HARDWARE SETUP                    //
 # ////////////////////////////////////////////////////////////////
@@ -113,6 +114,7 @@ class MainScreen(Screen):
     rampSpeed = INIT_RAMP_SPEED
     print('4')
     staircaseSpeed = 40
+    print(rampSpeed)
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
@@ -130,12 +132,19 @@ class MainScreen(Screen):
 
     def toggleStaircase(self):
         print("Turn on and off staircase here")
+        if self.ids.staircase.lDir == 0:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=0, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            self.ids.staircase.lDir = 1
+        elif self.ids.staircase.lDir == 1:
+            cyprus.set_pwm_values(1, period_value=100000, compare_value=self.ids.staircase.value, compare_mode=cyprus.LESS_THAN_OR_EQUAL)
+            self.ids.staircase.lDir = 0
         
     def toggleRamp(self):
         print("Move ramp up and down here")
         if not (cyprus.read_gpio() & 0b0010):
             while (cyprus.read_gpio() & 0b0001):
-                ramp.relative_move(-1)
+                ramp.run(0, self.ids.ramp.value)
+                print(self.ids.ramp.value)
             if not (cyprus.read_gpio() & 0b0001):
                 ramp.go_until_press(1, 25600)
 
@@ -144,14 +153,21 @@ class MainScreen(Screen):
         
     def setRampSpeed(self, speed):
         print("Set the ramp speed and update slider text")
-        self.rampSpeed = str(speed)
-        self.ids.rampSpeedLabel.text = str('Ramp Speed: ' + self.rampSpeed)
+        x = str(speed)
+        self.ids.rampSpeedLabel.text = str('Ramp Speed: ' + x)
+        ramp.set_speed(speed)
+        self.ids.ramp.value = int(ramp.speed) / 50
+        print(self.ids.ramp.value)
         
     def setStaircaseSpeed(self, speed):
         print("Set the staircase speed and update slider text")
         self.staircaseSpeed = str(speed)
+        x = int(self.staircaseSpeed) * 1000
+        print(x)
+        self.ids.staircase.value = x
+        print(self.ids.staircase.value)
         self.ids.staircaseSpeedLabel.text = str('Staircase Speed: ' + self.staircaseSpeed)
-        
+
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
 
