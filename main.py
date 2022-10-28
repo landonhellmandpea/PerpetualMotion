@@ -146,7 +146,7 @@ class MainScreen(Screen):
                 ramp.run(0, self.ids.ramp.value)
                 print(self.ids.ramp.value)
             if not (cyprus.read_gpio() & 0b0001):
-                ramp.go_until_press(1, 25600)
+                ramp.go_until_press(1, 55000)
 
     def auto(self):
         print("Run through one cycle of the perpetual motion machine")
@@ -170,6 +170,7 @@ class MainScreen(Screen):
 
     def initialize(self):
         print("Close gate, stop staircase and home ramp here")
+        cyprus.set_servo_position(2, 0)
 
     def resetColors(self):
         self.ids.gate.color = YELLOW
